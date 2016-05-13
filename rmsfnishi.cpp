@@ -28,7 +28,6 @@ int select_cod_rmsd( pdb_nishi pdb1, vector<double> &x, vector<double> &y,vector
  *   quatnishi 
  *
  * *************************************/
-//int quatnishi(char *codname,char *pdbname,int stride){
 int quatnishi( Inp_nishi inp1 ){
    // (1) input depending on RMSDMODE and RMSDATOM
    cout<<"\n------ MODE INPUT ------\n";
@@ -36,7 +35,6 @@ int quatnishi( Inp_nishi inp1 ){
    
    // (2) read pdb and memorize the range of residues for rmsd calculation
    pdb_nishi* pdb_tmp;
-   //pdb_tmp = new pdb_nishi( inp1.read("REFPDBNAME").c_str() );
    char refpdbname[1000];  // = inp1.read("REFPDBNAME").c_str();
    strcpy(refpdbname,inp1.read("REFPDBNAME").c_str() );
    pdb_tmp = new pdb_nishi( refpdbname );
@@ -51,9 +49,8 @@ int quatnishi( Inp_nishi inp1 ){
    int startres = atoi(inp1.read("STARTRES").c_str());
    int endres = atoi(inp1.read("ENDRES").c_str());
    int intra_start, intra_end;
-   //intra_start = pdb_tmp->search_n( 'B', atoi(inp1.read("STARTRES").c_str() ));
+
    //cout<<"DEBUG "<<inp1.read("STARTCHAIN").c_str()[0]<<endl;
-   //intra_start = pdb_tmp->search_n( inp1.read("STARTCHAIN").c_str()[0], atoi(inp1.read("STARTRES").c_str() ));
    intra_start = pdb_tmp->search_n( startchain, startres );
    if( pdb_tmp->rnum[pdb_tmp->total_atom - 1] == endres ){
       intra_end = pdb_tmp->total_atom -1;
@@ -327,20 +324,28 @@ flag1000:
       cout<<"startz = "<<startz<<endl;
       cout<<"endz = "<<endz<<endl;
 
-
       vector<double> vec_tar, vec_tar2, vec_ref2;
       vector<double> rmsd_tra;
       vector<double> buf_x, buf_y, buf_z;
+
+      /*"""""" RMSF CALCULATION """"""
+      INPUT
+      */
+      string rmsffile = inp1.read("RMSFFILE") ;  
+      vector<double> xi_all;
+      
+      /*"""""" LOOP START """"""
+      */
       for(unsigned int n=0;n<tra1->total_step;n++){
          for(unsigned int ii=0;ii<tra1->pdb1->total_atom;ii++){
-	    buf_x.push_back( tra1->cordx[n*tra1->pdb1->total_atom+ii] );
-	    buf_y.push_back( tra1->cordy[n*tra1->pdb1->total_atom+ii] );
-	    buf_z.push_back( tra1->cordz[n*tra1->pdb1->total_atom+ii] );
-	 }
+	     buf_x.push_back( tra1->cordx[n*tra1->pdb1->total_atom+ii] );
+	     buf_y.push_back( tra1->cordy[n*tra1->pdb1->total_atom+ii] );
+	     buf_z.push_back( tra1->cordz[n*tra1->pdb1->total_atom+ii] );
+	     }
 flag300:
          for(int i=intra_start;i<=intra_end;i++){
             select_quat( *tra1->pdb1, buf_x, buf_y, buf_z, vec_tar, rmsdatom, i );
-	 }
+	     }
 
          if( inversermsd == "YES" && flag == 100 ){
             intra_start = intra_end2 + 1;
@@ -360,13 +365,15 @@ flag300:
          rot_mat = quaternion( vec_ref, vec_tar );  // get rotation matrix
          //cout<<"!!! after vec_ref[0] = "<<vec_ref[0]<<", vec_ref[n] = "<<vec_ref[vec_ref.size() -1]<<endl;
          //cout<<"!!! after vec_tar[0] = "<<vec_tar[0]<<", vec_tar[n] = "<<vec_tar[vec_tar.size() -1]<<endl;
-
-      vector<double> transf;
-      transf.clear();  //reference
-      transf.push_back( rot_mat[ 9] );
-      transf.push_back( rot_mat[10] );
-      transf.push_back( rot_mat[11] );
-      transfer_quat( tra1->pdb1->coox, tra1->pdb1->cooy, tra1->pdb1->cooz, transf ); //transfer reference
+         //""""""" SUPERPOSITION """""""
+         vector<double> transf;
+         transf.clear();  //reference
+         transf.push_back( rot_mat[ 9] );
+         transf.push_back( rot_mat[10] );
+         transf.push_back( rot_mat[11] );
+         transfer_quat( tra1->pdb1->coox, tra1->pdb1->cooy, tra1->pdb1->cooz, transf ); //transfer reference
+         /*"""""" RMSD CALCULATION """"""
+         */
          // RMSD SELECTION 
          vec_tar2.clear(); vec_ref2.clear();
          select_cod_rmsd( *tra1->pdb1, buf_x, buf_y, buf_z, vec_tar2, vec_ref2, rot_mat, drmsdatom, dinversermsd ,startz,endz);
@@ -379,10 +386,21 @@ flag300:
             bx.push_back( vec_ref2[i] );
             by.push_back( vec_ref2[1+i] );
             bz.push_back( vec_ref2[2+i] );
+            /* RMSF */
+            xi_all.push_back(vec_tar2[i]);
+            xi_all.push_back(vec_tar2[1+i]);
+            xi_all.push_back(vec_tar2[2+i]);
          }  
          rmsd_tra.push_back( rmsd(ax,ay,az,bx,by,bz) );
-	 buf_x.clear(); buf_y.clear(); buf_z.clear(); vec_tar.clear();
+
+	  buf_x.clear(); buf_y.clear(); buf_z.clear(); vec_tar.clear();
       }
+      /* END OF THE LOOP
+      */
+      int num_rmsf = xi_all.size()/tra1->total_step/3;
+      cout<<endl<<"###### RMSF ######"<<endl;
+      cout<<"The # of RMSF values: "<<num_rmsf<<endl;
+
       string rmsdfile = inp1.read("RMSDFILE") ;  
       FILE *fout;
       if((fout = fopen( rmsdfile.c_str() ,"w")) == NULL ){
@@ -390,7 +408,8 @@ flag300:
 		exit(1);
       }
       for(unsigned int i=0;i<tra1->total_step;i++){
-         fprintf( fout,"%12i %12.5f \n", i+1, rmsd_tra[i] );
+         //fprintf( fout,"%12i %12.5f \n", i+1, rmsd_tra[i] );
+         fprintf( fout,"%12.5f \n", rmsd_tra[i] );
          //cout<<"Frame "<<i+1<<",  RMSD = "<<rmsd_tra[i]<<endl;
       }
       fclose(fout);

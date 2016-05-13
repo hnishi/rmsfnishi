@@ -24,13 +24,7 @@ DENDRES 234 #222  #234
 DINVERSERMSD   NO  # YES or NO
 
 # rmsf calculation
-RMSFATOM  ca
-FSTARTCHAIN A  # space; white space " " can be set using keyword "space" 
-FSTARTRES 1    #1  # 210
-FENDCHAIN B  # space; white space " " can be set using keyword "space" 
-FENDRES 234  #234  # 222
-FINVERSERMSD  NO  # YES or NO
-
+RMSFFILE output.rmsf
 
 # :::::::::   pdb-mode   :::::::::::::::::::::::::::::::::::::::::
 # input 
@@ -44,7 +38,7 @@ FINVERSERMSD  NO  # YES or NO
 #CODNAME ../samp/for_rmsd/traj/md_small.crd
 CODNAME ./sample/mdx.crd
 # output
-RMSDFILE output.rmsf
+RMSDFILE output.rmsd
 
 # trajectory settings
 STRIDE 1   # mabiki
