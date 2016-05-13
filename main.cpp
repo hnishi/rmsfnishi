@@ -6,8 +6,7 @@ using namespace std;
 int quatnishi(Inp_nishi);
 
 int main(int argc, char *argv[]){
-   cout<<"Version info. rmsfnishi v1.0 ;quatnishi v1.4.1 \n";
-//trr_
+   cout<<"Version info. rmsfnishi v1.0 ; <- quatnishi v1.4.1 \n";
 
 // ##################### ARGUMENT HANDLING ##########################
 // argv[1]: input parameter file
@@ -25,10 +24,6 @@ int main(int argc, char *argv[]){
 // DO quatnishi
    quatnishi(inp1);
   
-  if(1==2){}
-  else if(1==2){}
-  else cout<<"itazura"<<endl;
-
 // END
 	cout<<"\nit took "<<(float)clock()/CLOCKS_PER_SEC<<" sec of CPU to execute this program"<<endl;
 	return 0;
