@@ -331,7 +331,12 @@ flag1000:
       /*"""""" RMSF CALCULATION """"""
       INPUT
       */
-      string rmsffile = inp1.read("RMSFFILE") ;  
+      string cordfile = inp1.read("CORDFILE") ;  
+      FILE *fout_cord;
+      if((fout_cord = fopen( cordfile.c_str() ,"w")) == NULL ){
+		printf("cannot open output file: %s\n", cordfile.c_str() );
+		exit(1);
+      }
       vector<double> xi_all;
       
       /*"""""" LOOP START """"""
@@ -390,10 +395,12 @@ flag300:
             xi_all.push_back(vec_tar2[i]);
             xi_all.push_back(vec_tar2[1+i]);
             xi_all.push_back(vec_tar2[2+i]);
+            fprintf(fout_cord,"%.3f %.3f %.3f ",vec_tar2[i],vec_tar2[i+1],vec_tar2[i+2]);
          }  
          rmsd_tra.push_back( rmsd(ax,ay,az,bx,by,bz) );
 
-	  buf_x.clear(); buf_y.clear(); buf_z.clear(); vec_tar.clear();
+         fprintf(fout_cord,"\n");
+         buf_x.clear(); buf_y.clear(); buf_z.clear(); vec_tar.clear();
       }
       /* END OF THE LOOP
       */
@@ -413,6 +420,7 @@ flag300:
          //cout<<"Frame "<<i+1<<",  RMSD = "<<rmsd_tra[i]<<endl;
       }
       fclose(fout);
+      fclose(fout_cord);
 
       double tot=0;
       for(unsigned int i=0;i<rmsd_tra.size();i++){

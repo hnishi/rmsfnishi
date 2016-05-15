@@ -5,7 +5,7 @@ RMSDMODE cod # pdb  # pdb or cod
 # :::::::::   common settings   ::::::::::::::::::::::::::::::::::
 # input 
 #REFPDBNAME /work1/hnishi/4thTrial/ama2/inp_data/cut_3547.pdb
-REFPDBNAME ./sample/cut_3547.pdb
+REFPDBNAME ../sample/cut_3547.pdb
 
 # superposition 
 RMSDATOM  ca   # mainchain  # all: all atoms in pdb, heavy: heavy atoms, ca: CA (atom name) atoms in mainchain, mainchain: CA, N, C and O atoms in mainchain 
@@ -25,6 +25,7 @@ DINVERSERMSD   NO  # YES or NO
 
 # rmsf calculation
 RMSFFILE output.rmsf
+CORDFILE coord.dat
 
 # :::::::::   pdb-mode   :::::::::::::::::::::::::::::::::::::::::
 # input 
@@ -36,7 +37,7 @@ RMSFFILE output.rmsf
 # :::::::::   cod-mode   :::::::::::::::::::::::::::::::::::::::::
 # input 
 #CODNAME ../samp/for_rmsd/traj/md_small.crd
-CODNAME ./sample/mdx.crd
+CODNAME ../sample/mdx.crd
 # output
 RMSDFILE output.rmsd
 

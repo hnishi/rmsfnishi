@@ -6,7 +6,8 @@ using namespace std;
 int quatnishi(Inp_nishi);
 
 int main(int argc, char *argv[]){
-   cout<<"Version info. rmsfnishi v1.0 ; <- quatnishi v1.4.1 \n";
+   cout<<"Version info. rmsfnishi v2.0 ; <- quatnishi v1.4.1 \n";
+   cout<<"extrnishi \n";
 
 // ##################### ARGUMENT HANDLING ##########################
 // argv[1]: input parameter file
