@@ -2,7 +2,7 @@
 #LIBS = -L./libmisc -lmisc # ??? what is library?
 
 CXX = g++ # compiler
-CXXFLAGS = -Wall -g -O2 -pipe -I ~/programs/eigen-eigen-1306d75b4a21  # -DEIGEN_NO_DEBUG  # compiler option, -Wall enables strict warnings # -std=c++0x -std=c++11
+CXXFLAGS = -Wall -g -O2 -pipe -I ~/programs/eigen-eigen-07105f7124f9 # -DEIGEN_NO_DEBUG  # compiler option, -Wall enables strict warnings # -std=c++0x -std=c++11
 TARGET = a.out # the name of the program you want to make
 SRCS = inpnishi.cpp main.cpp pdbnishi.cpp tranishi.cpp rmsfnishi.cpp # the names of all source files
 DEPS = nlib.h math_nishi.h inpnishi.h # header; a dependency of *.o files
